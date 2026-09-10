@@ -15,9 +15,12 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.math.abs
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class DCHMEngineTest {
 
     private val testDispatcher = StandardTestDispatcher()
@@ -170,5 +173,60 @@ class DCHMEngineTest {
         assertNull(engine.latestInstantSignal.value)
         assertNull(engine.latestConfirmedSignal.value)
         assertEquals(0L, engine.engineMetrics.value.totalSignalsGenerated)
+    }
+
+    @Test
+    fun testCandleBehaviorAndContradictionSafetyLock() = testScope.runTest {
+        // Snapshot test for Contradiction (5m positive, 60m negative): Enforce NO ENTRY (isConfirmed = false)
+        val contradictionResult = DCHMEngine.evaluateSnapshot(
+            current5m = 0.20,
+            current60m = -0.15,
+            previous5m = 0.05,  // Δ5m = +0.15%
+            previous60m = -0.05 // Δ60m = -0.10%
+        )
+        assertFalse("Contradictory deltas must enforce isConfirmed = false", contradictionResult.isConfirmed)
+        assertEquals(TradeDirection.NEUTRAL, contradictionResult.prediction)
+
+        // Snapshot test for Strong Up
+        val strongUpResult = DCHMEngine.evaluateSnapshot(
+            current5m = 0.15,
+            current60m = 0.45,
+            previous5m = 0.05,
+            previous60m = 0.35
+        )
+        assertEquals(CandleBehavior.STRONG_UP, strongUpResult.candleBehavior)
+        assertEquals("🟢 ⬆️ Strong Up", strongUpResult.candleBehavior.displayText)
+
+        // Snapshot test for Strong Down
+        val strongDownResult = DCHMEngine.evaluateSnapshot(
+            current5m = -0.15,
+            current60m = -0.45,
+            previous5m = -0.05,
+            previous60m = -0.35
+        )
+        assertEquals(CandleBehavior.STRONG_DOWN, strongDownResult.candleBehavior)
+        assertEquals("🔴 ⬇️ Strong Down", strongDownResult.candleBehavior.displayText)
+
+        // Snapshot test for Spike & Drop (Sharp 5m spike with negative 60m)
+        val spikeAndDropResult = DCHMEngine.evaluateSnapshot(
+            current5m = 0.35,
+            current60m = -0.05,
+            previous5m = 0.05,  // Δ5m = +0.30%
+            previous60m = 0.00  // Δ60m = -0.05%
+        )
+        assertEquals(CandleBehavior.SPIKE_AND_DROP, spikeAndDropResult.candleBehavior)
+        assertEquals("🟡 ↗️ Spike & Drop", spikeAndDropResult.candleBehavior.displayText)
+        assertFalse("Exhaustion warning must lock isConfirmed to false", spikeAndDropResult.isConfirmed)
+
+        // Snapshot test for Dip & Rebound (Sharp 5m dip with positive 60m)
+        val dipAndReboundResult = DCHMEngine.evaluateSnapshot(
+            current5m = -0.35,
+            current60m = 0.05,
+            previous5m = -0.05, // Δ5m = -0.30%
+            previous60m = 0.00  // Δ60m = +0.05%
+        )
+        assertEquals(CandleBehavior.DIP_AND_REBOUND, dipAndReboundResult.candleBehavior)
+        assertEquals("🟡 ↘️ Dip & Rebound", dipAndReboundResult.candleBehavior.displayText)
+        assertFalse(dipAndReboundResult.isConfirmed)
     }
 }
