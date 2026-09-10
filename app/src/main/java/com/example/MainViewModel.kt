@@ -625,11 +625,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     item
                 }
             }
-            val updatedCurrent = if (currentState.currentAnalysis?.timestamp == timestamp) {
-                val toggled = if (currentState.currentAnalysis.outcome == outcome) null else outcome
-                currentState.currentAnalysis.copy(outcome = toggled)
+            val curAnalysis = currentState.currentAnalysis
+            val updatedCurrent = if (curAnalysis?.timestamp == timestamp) {
+                val toggled = if (curAnalysis.outcome == outcome) null else outcome
+                curAnalysis.copy(outcome = toggled)
             } else {
-                currentState.currentAnalysis
+                curAnalysis
             }
             val totalProfit = updatedHistory.count { it.outcome == com.example.data.models.TradeOutcome.PROFIT }
             val totalLoss = updatedHistory.count { it.outcome == com.example.data.models.TradeOutcome.LOSS }
@@ -711,8 +712,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val state = _uiState.value
 
             // 1. If Test Scenario mode is active, handle with instant algorithmic calculation or Gemini API
-            if (state.selectedTestImageId != null) {
-                val scenario = SampleChartGenerator.scenarios.getOrNull(state.selectedTestImageId)
+            val testImgId = state.selectedTestImageId
+            if (testImgId != null) {
+                val scenario = SampleChartGenerator.scenarios.getOrNull(testImgId)
                 if (scenario != null) {
                     _uiState.update {
                         it.copy(

@@ -1,0 +1,6 @@
+{
+  "name": "Quant Vision",
+  "description": "Quant Vision - AI Market Analyzer with DCHM Alpha-1 Engine",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
