@@ -1,6 +1,0 @@
-{
-  "name": "Quant Vision",
-  "description": "Fast 100% on-device visual quantitative trading analyzer with local OCR and real-time Bengali analytical outputs",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

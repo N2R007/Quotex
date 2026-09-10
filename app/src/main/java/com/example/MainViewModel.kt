@@ -87,6 +87,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
     val uiState: StateFlow<AnalyzerUiState> = _uiState.asStateFlow()
 
+    // Delta-Confluence Hybrid Matrix Engine (DCHM-Engine)
+    val dchmEngine = com.example.data.analyzer.DCHMEngine()
+    val dchmInstantPrediction: StateFlow<com.example.data.analyzer.TradeSignal?> = dchmEngine.latestInstantSignal
+    val dchmConfirmedSignal: StateFlow<com.example.data.analyzer.TradeSignal?> = dchmEngine.latestConfirmedSignal
+    val dchmMetrics: StateFlow<com.example.data.analyzer.DCHMEngine.EngineMetrics> = dchmEngine.engineMetrics
+
     init {
         com.example.audio.AudioSignalEngine.init(application)
         com.example.network.WebSocketTradeRelay.init(application)
@@ -96,6 +102,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         stopScanning()
+        dchmEngine.shutdown()
         com.example.audio.AudioSignalEngine.shutdown()
         com.example.network.WebSocketTradeRelay.stop()
     }
@@ -333,6 +340,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d(TAG, "stopScanning invoked")
         activeProcessingJob?.cancel()
         activeProcessingJob = null
+        dchmEngine.reset()
         lastStableMetrics = null
         pendingCandidateMetrics = null
         pendingCandidateCount = 0
@@ -455,6 +463,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectSampleScenario(scenarioIndex: Int?) {
         Log.d(TAG, "selectSampleScenario: $scenarioIndex")
+        dchmEngine.reset()
         lastStableMetrics = null
         pendingCandidateMetrics = null
         pendingCandidateCount = 0
@@ -901,6 +910,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         v1dRaw ?: parseVal(prev?.change1dValue, prev?.change1d)
                     }
                     val currentMetrics = StableMetrics(val5m = v5, val60m = v60, val1d = v1d)
+
+                    // DCHM-Engine Hook: Real-Time 5m & 60m Instant Delta & Matrix Validation
+                    if (v5 != null && v60 != null) {
+                        dchmEngine.processInstantDelta(current5mPercent = v5, current60mPercent = v60)
+                    }
 
                     // Rule 2 & 3: Compare each new scan with the previous preserved stable values (Exact Snapshot Comparison)
                     val isCoreUnchanged = lastStableMetrics != null &&
