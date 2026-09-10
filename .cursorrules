@@ -1,0 +1,30 @@
+# Quant Vision AI — Instructions & Code Freeze Policy
+
+> 🚨 **১০০% বাধ্যতামূলক কঠোর নিয়ম (MANDATORY STRICT CODE FREEZE & ZERO-UNSOLICITED MODIFICATION RULE):**
+> **যেকোনো AI মডেল, এজেন্ট (Gemini, Claude, Cursor, Copilot, ChatGPT, Windsurf, Cline ইত্যাদি), বা ডেভেলপারের জন্য এই প্রজেক্টের কোড সংরক্ষণের নীতি:**
+> 1. **স্বতঃপ্রণোদিত কোনো পরিবর্তন বা পাকনামি সম্পূর্ণ নিষিদ্ধ (Zero Unprompted Modifications):** এই প্রজেক্ট বা ফাইল ওপেন করার পর কোনো AI/এজেন্ট নিজে নিজে কোনো কোড, ফাইল স্ট্রাকচার, UI ডিজাইন, লজিক, ফাংশন, বা ডিপেন্ডেন্সি পরিবর্তন, আপডেট, ফরম্যাট, বা রিফ্যাক্টর করতে পারবে না।
+> 2. **বর্তমান অবস্থা ১০০% অবিকল সংরক্ষণ (Exact State Preservation):** অ্যাপ যেভাবে আছে ঠিক সেই অবস্থায়ই ওপেন ও রান করতে হবে। কোনো "উন্নয়নমূলক সাজেস্ট করা ফিচার", "অপ্রয়োজনীয় রিফ্যাক্টরিং", বা "অযাচিত প্যাকেজ আপডেট" প্রয়োগ করা সম্পূর্ণ নিষিদ্ধ।
+> 3. **ইউজারের সুস্পষ্ট নির্দেশ ছাড়া কোডে হাত দেওয়া নিষিদ্ধ (Explicit User Command Only):** শুধুমাত্র ইউজার যখন চ্যাটে নির্দিষ্ট কোনো কাজ করার জন্য সুস্পষ্ট আদেশ/নির্দেশ দেবেন, কেবল এবং কেবল তখনই সেই নির্দিষ্ট অংশটুকুর কাজ করা যাবে। নির্দেশিত কাজের বাইরে অন্য কোনো ফাইলে পরিবর্তন করা যাবে না।
+> 4. **আল্ট্রা-ফাস্ট স্ক্রিন ডিটেকশন ও তাৎক্ষণিক অটো-ট্রেড (Ultra-Fast Screen Detection & Instant Auto-Trade Dispatch):** স্ক্রিন ডিটেকশন সর্বদা ৫০ms-এ সম্পন্ন করতে হবে এবং ডিটেক্ট হওয়ার সাথে সাথে কোনো অতিরিক্ত বিলম্ব ছাড়া তাৎক্ষণিকভাবে অটো-ট্রেড ডিসপ্যাচ হতে হবে।
+
+---
+
+## 📱 অ্যাপটির কাজ ও পরিচালনা পদ্ধতি (How This App Works)
+
+1. **উদ্দেশ্য:** কম্পিউটার মনিটরে চলা লাইভ ট্রেডিং চার্ট ক্যামেরা দিয়ে স্ক্যান করে ৫০ মিলিসেকেন্ডে 5m, 60m এবং 1d পার্সেন্টেজ ভ্যালু নিখুঁতভাবে রিড করা।
+2. **ম্যাট্রিক্স ইঞ্জিন:** ২০৬টি ডিরেকশনাল রুলস (U001-U103, D001-D103) এবং ১৬৫টি অডিট ম্যাট্রিক্স (M001-M165) দিয়ে বুলিশ বা বেয়ারিশ ট্রেড সিগন্যাল জেনারেট করা।
+3. **কাস্টম রুলস ও ব্যাকআপ:** ইউজার রুল ওভাররাইড এবং ফুল JSON ব্যাকআপ/রিস্টোর করতে পারেন।
+4. **অটো-ট্রেড রিলে:** কনফার্ম সিগন্যালে স্বয়ংক্রিয়ভাবে WebSocket (`ws://192.168.0.104:8765`) এবং HTTP Webhook (`http://192.168.0.104:5000/trade`) মাধ্যমে ডেস্কটপ বটে তাত্ক্ষণিক ট্রেড এক্সিকিউট পাঠানো হয়।
+5. **ভয়েস অ্যালার্ট:** তাত্ক্ষণিক অডিও ও ভয়েস কলআউট।
+6. **স্ক্রিন স্ট্যাবিলিটি:** `FLAG_KEEP_SCREEN_ON` সক্রিয় থাকায় ট্রেডিং সেশনের সময় স্ক্রিন কখনই স্লিপ বা বন্ধ হয় না।
+
+---
+
+## 🚨 MANDATORY INSTRUCTION FOR CURSOR AI & ALL AGENTS (ENGLISH)
+
+**ABSOLUTE CODE FREEZE — ZERO UNSOLICITED MODIFICATIONS:**
+1. **Exact State Preservation**: When this project or repository is opened, you MUST preserve the entire codebase, file structure, dependencies, and UI exactly as it currently is.
+2. **Zero Unprompted Edits**: You are STRICTLY FORBIDDEN from performing automatic refactoring, formatting, dependency updates, design tweaks, or unsolicited "improvements".
+3. **Explicit User Instruction Only**: Do NOT edit, delete, or create any code or file unless the user has explicitly and specifically requested that exact modification in their current message.
+4. **Fastest Screen Detection & Instant Auto-Trade Dispatch**: Always maintain the ultra-fast 50ms detection loop and instant trade dispatch logic without artificial delay.
+5. **No AI Tampering**: Under no circumstances should any AI modify the quantitative matrix calculations, redesign the UI, or touch files outside the user's explicit scope.

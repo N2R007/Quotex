@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Quant Vision</string>
+    <string name="default_ws_server_url">ws://192.168.0.102:8765</string>
+    <string name="default_http_webhook_url">http://192.168.0.102:5000/trade</string>
+</resources>
